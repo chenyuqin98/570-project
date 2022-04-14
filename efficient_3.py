@@ -58,13 +58,18 @@ def generate():
             # print(l, len(s1), len(s2), 'show current s: ', s1, s2)
     return s1, s2
 
-def call_algorithm():
-    m, n = len(s1), len(s2)
+def call_algorithm(s1, s2):
+    m1, n = len(s1), len(s2)
+    # m1 = m//2 # mid of m
+
     pre_row = [0]*(n+1)
-    # bottom up
-    for i in range(1, m+1):
+    for j in range(n+1):
+        pre_row[j] = j * gap_penalty
+
+    for i in range(1, m1+1):
         # pre_ij, pre_i = row[0], row[0]
         new_row = [0] * (n + 1)
+        new_row[0] = i * gap_penalty
         for j in range(1, n+1):
             # pre_ij = row[j]
             if s1[i-1] == s2[j-1]:
@@ -76,15 +81,20 @@ def call_algorithm():
                                  pre_row[j-1]+mismatch_penalty)
             # pre_i = row[j]
         pre_row = new_row
-    return pre_row
-    # top down
-    # common = ''
-    # return common[::-1]
+    cost = pre_row[1:]
+    print(cost)
+    min_id = cost.index(min(cost)) + 1
+    # call_algorithm(s1, s2[min_id:])
+    # call_algorithm(s1, s2[:min_id])
+    # return pre_row  # for test
+
 
 
 if __name__=='__main__':
     s1, s2 = generate()
-    cost = call_algorithm()
-    print(cost)
+
+    call_algorithm(s1, s2)
+    # cost = call_algorithm()
+    # print(cost)
     # common = call_algorithm()
     # print(common, len(common))

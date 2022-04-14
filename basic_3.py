@@ -9,9 +9,10 @@ import psutil
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 gap_penalty = 30
-mismatch_penalty_val = {('A','C'):110, ('A','G'):48, ('A','T'):94,
-                        ('C','G'):118, ('C','T'):48,
-                        ('G','T'):110}
+mismatch_penalty_val = {('A', 'A'):0, ('A', 'C'):110, ('A', 'G'):48, ('A', 'T'):94,
+                        ('C', 'A'):110, ('C', 'C'):0, ('C','G'):118, ('C', 'T'):48,
+                        ('G', 'A'):48, ('G', 'C'):118, ('G', 'G'):0, ('G', 'T'):110,
+                        ('T', 'A'):94, ('T', 'C'):48, ('T', 'G'):110, ('T', 'T'):0}
 
 def process_memory():
     process = psutil.Process()
@@ -60,46 +61,47 @@ def generate():
 
 def call_algorithm():
     m, n = len(s1), len(s2)
-    # matrix = [[float('inf')]*(n+1) for _ in range(m+1)]
-    # for i in range(m+1):
-    #     matrix[i][0] = 0
-    # for j in range(n+1):
-    #     matrix[0][j] = 0
     matrix = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m+1):
+        matrix[i][0] = i * gap_penalty
+    for j in range(n+1):
+        matrix[0][j] = j * gap_penalty
+
     # bottom up
     for i in range(1, m+1):
         for j in range(1, n+1):
-            if s1[i-1] == s2[j-1]:
-                matrix[i][j] = matrix[i-1][j-1]
-            else:
-                key = tuple(sorted([s1[i-1], s2[j-1]]))
-                mismatch_penalty = mismatch_penalty_val[key]
-                matrix[i][j] = min(matrix[i][j-1]+gap_penalty,
-                                   matrix[i-1][j]+gap_penalty,
-                                   matrix[i-1][j-1]+mismatch_penalty)
-    # return matrix[-1] # for test
+            key = (s1[i-1], s2[j-1])
+            mismatch_penalty = mismatch_penalty_val[key]
+            matrix[i][j] = min(matrix[i][j - 1] + gap_penalty,
+                               matrix[i - 1][j] + gap_penalty,
+                               matrix[i - 1][j - 1] + mismatch_penalty)
     # top down
     i, j = m, n
-    common = ''
-    while i>0 and j>0:
-        # print(i, j)
-        if s1[i-1]==s2[j-1]:
-            common += s1[i-1]
-            i -= 1
-            j -= 1
-        elif matrix[i][j] == matrix[i][j-1]+gap_penalty:
+    s1_rlt, s2_rlt = '', ''
+    while i>0 or j>0:
+        # print(i, j, s1_rlt[::-1], s2_rlt[::-1], s1[i - 1], s2[j - 1])
+        if matrix[i][j] == matrix[i][j-1]+gap_penalty:
+            s1_rlt += '_'
+            s2_rlt += s2[j - 1]
             j -= 1
         elif matrix[i][j] == matrix[i-1][j]+gap_penalty:
+            s1_rlt += s1[i - 1]
+            s2_rlt += '_'
             i -= 1
         else:
+            s1_rlt += s1[i - 1]
+            s2_rlt += s2[j - 1]
             i -= 1
             j -= 1
-    return common[::-1]
+    # print(i, j)
+    return matrix[-1][-1], s1_rlt[::-1], s2_rlt[::-1]
 
 
 if __name__=='__main__':
     s1, s2 = generate()
-    # cost = call_algorithm()
-    # print(cost)
-    common = call_algorithm()
-    print(common, len(common))
+    # print(s1)
+    # print(s2)
+    cost, s1_rlt, s2_rlt = call_algorithm()
+    print('cost: ', cost)
+    print(s1_rlt)
+    print(s2_rlt)
