@@ -14,11 +14,10 @@ mismatch_penalty_val = {('A', 'A'):0, ('A', 'C'):110, ('A', 'G'):48, ('A', 'T'):
                         ('G', 'A'):48, ('G', 'C'):118, ('G', 'G'):0, ('G', 'T'):110,
                         ('T', 'A'):94, ('T', 'C'):48, ('T', 'G'):110, ('T', 'T'):0}
 
-def process_memory():
-    process = psutil.Process()
-    memory_info = process.memory_info()
-    memory_consumed = int(memory_info.rss/1024)
-    return memory_consumed
+def process_memory(): 
+  process = psutil.Process() 
+  memory_info = process.memory_info()
+  return memory_info.rss
 
 def time_wrapper():
     start_time = time.time()
@@ -59,7 +58,17 @@ def generate():
             # print(l, len(s1), len(s2), 'show current s: ', s1, s2)
     return s1, s2
 
-def call_algorithm():
+def performance_check(func):
+  def wrapper(*args, **kwargs):
+    time_start = time.time()
+    cost, s1_rlt, s2_rlt = func(*args)
+    memory_used = process_memory()
+    time_end = time.time()
+    return cost, s1_rlt, s2_rlt, (time_end - time_start) * 1000, memory_used
+  return wrapper
+
+@performance_check
+def call_algorithm(s1, s2):
     m, n = len(s1), len(s2)
     matrix = [[0] * (n + 1) for _ in range(m + 1)]
     for i in range(m+1):
@@ -96,12 +105,16 @@ def call_algorithm():
     # print(i, j)
     return matrix[-1][-1], s1_rlt[::-1], s2_rlt[::-1]
 
+def output_write(cost, s1, s2, time_used, memory_used):
+  with open(output_file, 'w') as f:
+    f.write('Cost of the alignment:' + str(cost) + '\n')
+    f.write('First string alignment:' + str(s1) + '\n')
+    f.write('Second string alignment:' + str(s2) + '\n')
+    f.write('Time in Miliseconds:' + str(round(time_used, 3)) + '\n')
+    f.write('Memory in Kilobytes:' + str(memory_used) + '\n')
+    f.close()
 
 if __name__=='__main__':
     s1, s2 = generate()
-    # print(s1)
-    # print(s2)
-    cost, s1_rlt, s2_rlt = call_algorithm()
-    print('cost: ', cost)
-    print(s1_rlt)
-    print(s2_rlt)
+    cost, s1_rlt, s2_rlt, time_used, memory_used = call_algorithm(s1, s2)
+    output_write(cost, s1_rlt, s2_rlt, time_used, memory_used)
