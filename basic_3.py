@@ -102,7 +102,7 @@ def call_algorithm(s1, s2):
             s2_rlt += s2[j - 1]
             i -= 1
             j -= 1
-    # print(i, j)
+    # print(matrix)
     return matrix[-1][-1], s1_rlt[::-1], s2_rlt[::-1]
 
 def output_write(cost, s1, s2, time_used, memory_used):
