@@ -65,11 +65,12 @@ def split_s(s, pos = -1):
 
 def call_algorithm(s1, s2):
     cost = dp(s1, s2)[0]
-    return cost
+    s1_rlt, s2_rlt = divide_conquer(s1, s2)
+    return cost, s1_rlt, s2_rlt
 
 def divide_conquer(s1, s2):
     if len(s1) == 0 or len(s2)==0:
-        return # 需要处理终止条件
+        return '', '' # 需要处理终止条件，若len（s1）为0则将对应的s2替换为'_'，s2亦然
     s1_1, s1_2 = split_s(s1)
     best_pos = dp(s1_1, s2)[1]
     s2_1, s2_2 = split_s(s2, best_pos)
