@@ -67,8 +67,14 @@ def call_algorithm(s1, s2):
     cost = dp(s1, s2)[0]
     return cost
 
-def devide_conquer():
-    pass
+def divide_conquer(s1, s2):
+    if len(s1) == 0 or len(s2)==0:
+        return # 需要处理终止条件
+    s1_1, s1_2 = split_s(s1)
+    best_pos = dp(s1_1, s2)[1]
+    s2_1, s2_2 = split_s(s2, best_pos)
+    divide_conquer(s1_1, s2_1)
+    divide_conquer(s1_2, s2_2)
 
 def dp(s1, s2):
     m, n = len(s1), len(s2)
