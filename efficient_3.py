@@ -65,17 +65,24 @@ def split_s(s, pos = -1):
 
 def call_algorithm(s1, s2):
     cost = dp(s1, s2)[0]
-    s1_rlt, s2_rlt = divide_conquer(s1, s2)
-    return cost, s1_rlt, s2_rlt
+    divide_conquer(s1, 0, s2, 0)
+    return cost, rlt1, rlt2
+    # return cost, s1_rlt, s2_rlt
 
-def divide_conquer(s1, s2):
-    if len(s1) == 0 or len(s2)==0:
-        return '', '' # 需要处理终止条件，若len（s1）为0则将对应的s2替换为'_'，s2亦然
+def divide_conquer(s1, s1_start, s2, s2_start):
+    if len(s1) == 0:
+        global rlt2
+        rlt2 = rlt2[:s2_start] + '_' * len(s2) + rlt2[s2_start + len(s2):]
+        return # 需要处理终止条件，若len（s1）为0则将对应的s2替换为'_'，s2亦然
+    if len(s2) == 0:
+        global rlt1
+        rlt1 = rlt1[:s1_start] + '_' * len(s1) + rlt1[s1_start + len(s1):]
+        return
     s1_1, s1_2 = split_s(s1)
     best_pos = dp(s1_1, s2)[1]
     s2_1, s2_2 = split_s(s2, best_pos)
-    divide_conquer(s1_1, s2_1)
-    divide_conquer(s1_2, s2_2)
+    divide_conquer(s1_1, s1_start, s2_1, s2_start)
+    divide_conquer(s1_2, s1_start + len(s1_1), s2_2, s2_start + len(s2_1))
 
 def dp(s1, s2):
     m, n = len(s1), len(s2)
@@ -97,16 +104,16 @@ def dp(s1, s2):
                                  pre_row[j - 1] + mismatch_penalty)
         pre_row = new_row
     cost = pre_row[1:]
-    print(cost)
+    # print(cost)
     best_pos = cost.index(min(cost)) + 1
     return cost[-1], best_pos
 
 
 if __name__=='__main__':
     s1, s2 = generate()
+    rlt1, rlt2 = s1, s2
 
-    call_algorithm(s1, s2)
-    # cost = call_algorithm()
-    # print(cost)
+    cost = call_algorithm(s1, s2)
+    print(cost)
     # common = call_algorithm()
     # print(common, len(common))
