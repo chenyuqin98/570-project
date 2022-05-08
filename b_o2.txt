@@ -1,0 +1,5 @@
+Cost of the alignment:1128
+First string alignment:ACACACTGACTACTGACTGGTGACTACTGACTGGACTGACTACTGACTGGTGACTAC_TGACTG_G
+Second string alignment:______T___TA_T___T____A_TAC_G_C_G_AC_G_C____GA_T__T_A_TACGCGAC_GCG
+Time in Miliseconds:0.993
+Memory in Kilobytes:15101952

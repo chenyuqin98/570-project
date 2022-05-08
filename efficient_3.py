@@ -75,9 +75,9 @@ def call_algorithm(s1, s2):
     # for i in range(len(replace_s2)-1, -1, -1):
     #     rlt2 = rlt2[:replace_s2[i][0]] + '_' * replace_s2[i][1] + rlt2[replace_s2[i][0]:]
     for i in range(len(replace_s1) - 1, -1, -1):
-        rlt1 = rlt1[:replace_s1[i][0]] + replace_s1[i][1] + rlt1[replace_s1[i][0] + replace_s1[i][2] + 1:]
+        rlt1 = rlt1[:replace_s1[i][0]] + replace_s1[i][1] + rlt1[replace_s1[i][0] + replace_s1[i][2]:]
     for i in range(len(replace_s2)-1, -1, -1):
-        rlt2 = rlt2[:replace_s2[i][0]] + replace_s2[i][1] + rlt2[replace_s2[i][0] + replace_s2[i][2] + 1:]
+        rlt2 = rlt2[:replace_s2[i][0]] + replace_s2[i][1] + rlt2[replace_s2[i][0] + replace_s2[i][2]:]
     return cost, rlt1, rlt2
 
 def divide_conquer(s1, s1_start, s2, s2_start):
@@ -98,7 +98,8 @@ def divide_conquer(s1, s1_start, s2, s2_start):
     #     return
     if s1 == s2:
         return
-    if len(s1) <= 1 or len(s2) <= 1: # call basic algorithm
+    # call basic algorithm
+    if len(s1) <= 1 or len(s2) <= 1:
         m, n = len(s1), len(s2)
         matrix = [[0] * (n + 1) for _ in range(m + 1)]
         for i in range(m + 1):
@@ -189,6 +190,7 @@ if __name__=='__main__':
     replace_s1, replace_s2 = [], []
 
     final_rlt = call_algorithm(s1, s2)
+    print('cost : ',  final_rlt[0])
     print('final_rlt of s1 and s2: ')
     print(final_rlt[1])
     print(final_rlt[2])

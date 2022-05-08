@@ -6,8 +6,8 @@ import sys
 import time
 import psutil
 
-# input_file = sys.argv[1]
-# output_file = sys.argv[2]
+input_file = sys.argv[1]
+output_file = sys.argv[2]
 gap_penalty = 30
 mismatch_penalty_val = {('A', 'A'):0, ('A', 'C'):110, ('A', 'G'):48, ('A', 'T'):94,
                         ('C', 'A'):110, ('C', 'C'):0, ('C','G'):118, ('C', 'T'):48,
