@@ -64,7 +64,7 @@ def split_s(s, pos = -1):
     return s[:pos], s[pos:]
 
 def call_algorithm(s1, s2):
-    cost = dp(s1, s2)[0]
+    cost = dp(s1, s2)[-1]
     divide_conquer(s1, 0, s2, 0)
     return cost, rlt1, rlt2
     # return cost, s1_rlt, s2_rlt
@@ -83,8 +83,15 @@ def divide_conquer(s1, s1_start, s2, s2_start):
         rlt1 = rlt1[:s1_start] + '_' * len(s1) + rlt1[s1_start + len(s1):]
         print('rlt1', rlt1)
         return
+    if s1 == s2:
+        return
     s1_1, s1_2 = split_s(s1)
-    best_pos = dp(s1_1, s2)[1]
+    cost1 = dp(s1_1, s2)
+    # cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
+    # cost = [cost1[i]+cost2[i] for i in range(len(cost1))] # 也可能是只用cost1？不确定是不是要加起来！
+    cost = cost1
+    best_pos = cost.index(min(cost)) + 1
+
     s2_1, s2_2 = split_s(s2, best_pos)
     divide_conquer(s1_1, s1_start, s2_1, s2_start)
     divide_conquer(s1_2, s1_start + len(s1_1), s2_2, s2_start + len(s2_1))
@@ -109,20 +116,23 @@ def dp(s1, s2):
                                  pre_row[j - 1] + mismatch_penalty)
         pre_row = new_row
     cost = pre_row[1:]
-    best_pos = cost.index(min(cost)) + 1
-    # print(cost, len(cost), n)
-    # print(best_pos - 1, cost[best_pos - 1])
-    return cost[-1], best_pos
+
+    return cost
+
+def compute_score(s1, s2):
+    return 0
 
 if __name__=='__main__':
     s1, s2 = generate()
     rlt1, rlt2 = s1, s2
 
-    cost = call_algorithm(s1, s2)
-    print(cost)
+    final_rlt = call_algorithm(s1, s2)
+    print(final_rlt)
 
     # debug:
-    s1_1, s1_2 = split_s(s1)
-    best_pos = dp(s1_1, s2)[1]
-    # common = call_algorithm()
-    # print(common, len(common))
+    # s1_1, s1_2 = split_s(s1)
+    # cost1 = dp(s1_1, s2)
+    # cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
+    # cost = [cost1[i] + cost2[i] for i in range(len(cost1))]
+    # best_pos = cost.index(min(cost)) + 1
+    # print(s1_1, s2[:best_pos])
