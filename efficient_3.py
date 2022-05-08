@@ -20,12 +20,13 @@ def process_memory():
     memory_consumed = int(memory_info.rss/1024)
     return memory_consumed
 
-def time_wrapper():
+def time_wrapper(s1, s2):
     start_time = time.time()
-    call_algorithm()
+    cost, rlt1, rlt2 = call_algorithm(s1, s2)
     end_time = time.time()
     time_taken = (end_time - start_time)*1000
-    return time_taken
+    memory_used = process_memory()
+    return cost, rlt1, rlt2, time_taken, memory_used
 
 def insert(pos, str):
     curr_s = str
@@ -157,23 +158,19 @@ def compute_cost(s1, s2):
             cost += mismatch_penalty
     return cost
 
+def output_write(cost, s1, s2, time_used, memory_used):
+  with open(output_file, 'w') as f:
+    f.write('Cost of the alignment:' + str(cost) + '\n')
+    f.write('First string alignment:' + str(s1) + '\n')
+    f.write('Second string alignment:' + str(s2) + '\n')
+    f.write('Time in Miliseconds:' + str(round(time_used, 3)) + '\n')
+    f.write('Memory in Kilobytes:' + str(memory_used) + '\n')
+    f.close()
+
 if __name__=='__main__':
     s1, s2 = generate()
     rlt1, rlt2 = s1, s2
     replace_s1, replace_s2 = [], []
 
-    final_rlt = call_algorithm(s1, s2)
-    print('cost : ',  final_rlt[0])
-    print('final_rlt of s1 and s2: ')
-    print(final_rlt[1])
-    print(final_rlt[2])
-    print('test cost: ', compute_cost(final_rlt[1], final_rlt[2]))
-
-    # debug:
-    # s1_1, s1_2 = split_s(s1)
-    # cost1 = dp(s1_1, s2)
-    # cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
-    # cost = [cost1[i] + cost2[i] for i in range(len(cost1))]
-    # print(cost)
-    # best_pos = cost.index(min(cost)) + 1
-    # print(s1_1, s2[:best_pos])
+    cost, rlt1, rlt2, time_taken, memory_used = time_wrapper(s1, s2)
+    output_write(cost, rlt1, rlt2, time_taken, memory_used)
