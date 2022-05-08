@@ -114,7 +114,19 @@ def output_write(cost, s1, s2, time_used, memory_used):
     f.write('Memory in Kilobytes:' + str(memory_used) + '\n')
     f.close()
 
+def compute_cost(s1, s2):
+    cost = 0
+    for i in range(len(s1)):
+        if s1[i] == '_' or s2[i] =='_':
+            cost += gap_penalty
+        elif s1[i] != s2[i]:
+            key = tuple(sorted([s1[i], s2[i]]))
+            mismatch_penalty = mismatch_penalty_val[key]
+            cost += mismatch_penalty
+    return cost
+
 if __name__=='__main__':
     s1, s2 = generate()
     cost, s1_rlt, s2_rlt, time_used, memory_used = call_algorithm(s1, s2)
+    # print(compute_cost(s1_rlt, s2_rlt))
     output_write(cost, s1_rlt, s2_rlt, time_used, memory_used)

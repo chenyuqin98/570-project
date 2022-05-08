@@ -70,7 +70,7 @@ def call_algorithm(s1, s2):
     # return cost, s1_rlt, s2_rlt
 
 def divide_conquer(s1, s1_start, s2, s2_start):
-    # 需要处理终止条件，若len（s1）为0则将对应的s2替换为'_'，s2亦然
+    # 需要处理终止条件，若len（s1）为0则将对应的s1加入'_'（不是替换！），s2亦然
     if len(s2) == 0:
         print(s1, s1_start, s2, s2_start)
         global rlt2
@@ -119,17 +119,26 @@ def dp(s1, s2):
 
     return cost
 
-def compute_score(s1, s2):
-    return 0
+def compute_cost(s1, s2):
+    cost = 0
+    for i in range(len(s1)):
+        if s1[i] == '_' or s2[i] =='_':
+            cost += gap_penalty
+        elif s1[i] != s2[i]:
+            key = tuple(sorted([s1[i], s2[i]]))
+            mismatch_penalty = mismatch_penalty_val[key]
+            cost += mismatch_penalty
+    return cost
 
 if __name__=='__main__':
     s1, s2 = generate()
     rlt1, rlt2 = s1, s2
 
     final_rlt = call_algorithm(s1, s2)
-    print('final_rlt')
+    print('final_rlt of s1 and s2: ')
     print(final_rlt[1])
     print(final_rlt[2])
+    print('test cost: ', compute_cost(final_rlt[1], final_rlt[2]))
 
     # debug:
     # s1_1, s1_2 = split_s(s1)
