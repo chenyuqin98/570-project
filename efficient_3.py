@@ -59,95 +59,80 @@ def generate():
             # print(l, len(s1), len(s2), 'show current s: ', s1, s2)
     return s1, s2
 
+def call_algorithm(s1, s2):
+    cost = dp(s1, s2)[-1]
+    rlt1, rlt2 = divide_conquer(s1, s2)
+    return cost, rlt1, rlt2
+
 def split_s(s, pos = -1):
     if pos == -1: # default to split in the mid
         pos = len(s)//2
     return s[:pos], s[pos:]
 
-def call_algorithm(s1, s2):
-    cost = dp(s1, s2)[-1]
-    divide_conquer(s1, 0, s2, 0)
-    global replace_s1, replace_s2
-    replace_s1, replace_s2 = sorted(replace_s1), sorted(replace_s2)
-    global rlt1, rlt2
-    # for i in range(len(replace_s1)-1, -1, -1):
-    #     rlt1 = rlt1[:replace_s1[i][0]] + '_' * replace_s1[i][1] + rlt1[replace_s1[i][0]:]
-    # for i in range(len(replace_s2)-1, -1, -1):
-    #     rlt2 = rlt2[:replace_s2[i][0]] + '_' * replace_s2[i][1] + rlt2[replace_s2[i][0]:]
-    for i in range(len(replace_s1) - 1, -1, -1):
-        rlt1 = rlt1[:replace_s1[i][0]] + replace_s1[i][1] + rlt1[replace_s1[i][0] + replace_s1[i][2]:]
-    for i in range(len(replace_s2)-1, -1, -1):
-        rlt2 = rlt2[:replace_s2[i][0]] + replace_s2[i][1] + rlt2[replace_s2[i][0] + replace_s2[i][2]:]
-    return cost, rlt1, rlt2
+def basic_dp(s1, s2):
+    m, n = len(s1), len(s2)
+    matrix = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        matrix[i][0] = i * gap_penalty
+    for j in range(n + 1):
+        matrix[0][j] = j * gap_penalty
 
-def divide_conquer(s1, s1_start, s2, s2_start):
-    # 需要处理终止条件，若len（s1）为0则将对应的s1加入'_'（不是替换！），s2亦然
-    # if len(s2) == 0:
-    #     # print(s1, s1_start, s2, s2_start)
-    #     # global rlt2
-    #     # rlt2 = rlt2[:s2_start + 1] + '_' * len(s1) + rlt2[s2_start:]
-    #     # print('rlt2', rlt2)
-    #     replace_s2.append((s2_start, len(s1)))
-    #     return
-    # if len(s1) == 0:
-    #     # print(s1, s1_start, s2, s2_start)
-    #     # global rlt1
-    #     # rlt1 = rlt1[:s1_start + 1] + '_' * len(s2) + rlt1[s1_start:]
-    #     # print('rlt1', rlt1)
-    #     replace_s1.append((s1_start, len(s2)))
-    #     return
-    if s1 == s2:
-        return
-    # call basic algorithm
-    if len(s1) <= 1 or len(s2) <= 1:
-        m, n = len(s1), len(s2)
-        matrix = [[0] * (n + 1) for _ in range(m + 1)]
-        for i in range(m + 1):
-            matrix[i][0] = i * gap_penalty
-        for j in range(n + 1):
-            matrix[0][j] = j * gap_penalty
+    # bottom up
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            key = (s1[i - 1], s2[j - 1])
+            mismatch_penalty = mismatch_penalty_val[key]
+            matrix[i][j] = min(matrix[i][j - 1] + gap_penalty,
+                               matrix[i - 1][j] + gap_penalty,
+                               matrix[i - 1][j - 1] + mismatch_penalty)
+    # top down
+    i, j = m, n
+    s1_rlt, s2_rlt = '', ''
+    while i > 0 or j > 0:
+        if matrix[i][j] == matrix[i][j - 1] + gap_penalty:
+            s1_rlt += '_'
+            s2_rlt += s2[j - 1]
+            j -= 1
+        elif matrix[i][j] == matrix[i - 1][j] + gap_penalty:
+            s1_rlt += s1[i - 1]
+            s2_rlt += '_'
+            i -= 1
+        else:
+            s1_rlt += s1[i - 1]
+            s2_rlt += s2[j - 1]
+            i -= 1
+            j -= 1
+    s1_rlt, s2_rlt = s1_rlt[::-1], s2_rlt[::-1]
+    return s1_rlt, s2_rlt
 
-        # bottom up
-        for i in range(1, m + 1):
-            for j in range(1, n + 1):
-                key = (s1[i - 1], s2[j - 1])
-                mismatch_penalty = mismatch_penalty_val[key]
-                matrix[i][j] = min(matrix[i][j - 1] + gap_penalty,
-                                   matrix[i - 1][j] + gap_penalty,
-                                   matrix[i - 1][j - 1] + mismatch_penalty)
-        # top down
-        i, j = m, n
-        s1_rlt, s2_rlt = '', ''
-        while i > 0 or j > 0:
-            # print(i, j, s1_rlt[::-1], s2_rlt[::-1], s1[i - 1], s2[j - 1])
-            if matrix[i][j] == matrix[i][j - 1] + gap_penalty:
-                s1_rlt += '_'
-                s2_rlt += s2[j - 1]
-                j -= 1
-            elif matrix[i][j] == matrix[i - 1][j] + gap_penalty:
-                s1_rlt += s1[i - 1]
-                s2_rlt += '_'
-                i -= 1
-            else:
-                s1_rlt += s1[i - 1]
-                s2_rlt += s2[j - 1]
-                i -= 1
-                j -= 1
-        s1_rlt, s2_rlt = s1_rlt[::-1], s2_rlt[::-1]
-        replace_s1.append((s1_start, s1_rlt, len(s1)))
-        replace_s2.append((s2_start, s2_rlt, len(s2)))
-        return
-
+def divide_conquer(s1, s2):
     s1_1, s1_2 = split_s(s1)
     cost1 = dp(s1_1, s2)
     cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
-    cost = [cost1[i]+cost2[i] for i in range(len(cost1))] # 也可能是只用cost1？不确定是不是要加起来！
-    # cost = cost1
+    cost = [cost1[i]+cost2[i] for i in range(len(cost1))]
     best_pos = cost.index(min(cost)) + 1
+    best_pos = len(cost) - cost[::-1].index(min(cost))
+    # print(cost, best_pos, '-----s1_1, s2_1: ', s1_1, s2[:best_pos], '\n')
+
+    mincost = cost1[0] + cost2[0]
+    best_pos = 0
+    # print(len(cost1), len(s2))
+    for i in range(1, len(s2) + 1):
+        if cost1[i] + cost2[i] < mincost:
+            mincost = cost1[i] + cost2[i]
+            best_pos = i
 
     s2_1, s2_2 = split_s(s2, best_pos)
-    divide_conquer(s1_1, s1_start, s2_1, s2_start)
-    divide_conquer(s1_2, s1_start + len(s1_1), s2_2, s2_start + len(s2_1))
+
+    if len(s1_1) <= 1 or len(s2_1) <= 1:
+        s1_rlt_1, s2_rlt_1 = basic_dp(s1_1, s2_1)
+    else:
+        s1_rlt_1, s2_rlt_1 = divide_conquer(s1_1, s2_1)
+    if len(s1_2) <= 1 or len(s2_2) <= 1:
+        s1_rlt_2, s2_rlt_2 = basic_dp(s1_2, s2_2)
+    else:
+        s1_rlt_2, s2_rlt_2 = divide_conquer(s1_2, s2_2)
+    return s1_rlt_1+s1_rlt_2, s2_rlt_1+s2_rlt_2
 
 def dp(s1, s2):
     m, n = len(s1), len(s2)
@@ -160,15 +145,12 @@ def dp(s1, s2):
         new_row = [0] * (n + 1)
         new_row[0] = i * gap_penalty
         for j in range(1, n + 1):
-            if s1[i - 1] == s2[j - 1]:
-                new_row[j] = pre_row[j - 1]
-            else:
-                key = tuple(sorted([s1[i - 1], s2[j - 1]]))
-                mismatch_penalty = mismatch_penalty_val[key]
-                new_row[j] = min(new_row[j - 1] + gap_penalty, pre_row[j] + gap_penalty,
-                                 pre_row[j - 1] + mismatch_penalty)
+            key = (s1[i - 1], s2[j - 1])
+            mismatch_penalty = mismatch_penalty_val[key]
+            new_row[j] = min(new_row[j - 1] + gap_penalty, pre_row[j] + gap_penalty,
+                             pre_row[j - 1] + mismatch_penalty)
         pre_row = new_row
-    cost = pre_row[1:]
+    cost = pre_row
 
     return cost
 
@@ -178,7 +160,7 @@ def compute_cost(s1, s2):
         if s1[i] == '_' or s2[i] =='_':
             cost += gap_penalty
         elif s1[i] != s2[i]:
-            # print(s1[i], s2[i])
+            # print('mismatch', s1[i], s2[i])
             key = tuple(sorted([s1[i], s2[i]]))
             mismatch_penalty = mismatch_penalty_val[key]
             cost += mismatch_penalty
