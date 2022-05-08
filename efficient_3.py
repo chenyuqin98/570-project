@@ -109,18 +109,9 @@ def divide_conquer(s1, s2):
     s1_1, s1_2 = split_s(s1)
     cost1 = dp(s1_1, s2)
     cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
-    cost = [cost1[i]+cost2[i] for i in range(len(cost1))]
-    best_pos = cost.index(min(cost)) + 1
-    best_pos = len(cost) - cost[::-1].index(min(cost))
-    # print(cost, best_pos, '-----s1_1, s2_1: ', s1_1, s2[:best_pos], '\n')
 
-    mincost = cost1[0] + cost2[0]
-    best_pos = 0
-    # print(len(cost1), len(s2))
-    for i in range(1, len(s2) + 1):
-        if cost1[i] + cost2[i] < mincost:
-            mincost = cost1[i] + cost2[i]
-            best_pos = i
+    cost = [cost1[i]+cost2[i] for i in range(len(cost1))]
+    best_pos = cost.index(min(cost))
 
     s2_1, s2_2 = split_s(s2, best_pos)
 
