@@ -66,6 +66,13 @@ def split_s(s, pos = -1):
 def call_algorithm(s1, s2):
     cost = dp(s1, s2)[-1]
     divide_conquer(s1, 0, s2, 0)
+    global gap_s1, gap_s2
+    gap_s1, gap_s2 = sorted(gap_s1), sorted(gap_s2)
+    global rlt1, rlt2
+    for i in range(len(gap_s1)-1, -1, -1):
+        rlt1 = rlt1[:gap_s1[i][0]] + '_' * gap_s1[i][1] + rlt1[gap_s1[i][0]:]
+    for i in range(len(gap_s2)-1, -1, -1):
+        rlt2 = rlt2[:gap_s2[i][0]] + '_' * gap_s2[i][1] + rlt2[gap_s2[i][0]:]
     return cost, rlt1, rlt2
     # return cost, s1_rlt, s2_rlt
 
@@ -73,15 +80,17 @@ def divide_conquer(s1, s1_start, s2, s2_start):
     # 需要处理终止条件，若len（s1）为0则将对应的s1加入'_'（不是替换！），s2亦然
     if len(s2) == 0:
         print(s1, s1_start, s2, s2_start)
-        global rlt2
-        rlt2 = rlt2[:s2_start] + '_' * len(s1) + rlt2[s2_start:]
-        print('rlt2', rlt2)
+        # global rlt2
+        # rlt2 = rlt2[:s2_start + 1] + '_' * len(s1) + rlt2[s2_start:]
+        # print('rlt2', rlt2)
+        gap_s2.append((s2_start, len(s1)))
         return
     if len(s1) == 0:
         print(s1, s1_start, s2, s2_start)
-        global rlt1
-        rlt1 = rlt1[:s1_start] + '_' * len(s2) + rlt1[s1_start:]
-        print('rlt1', rlt1)
+        # global rlt1
+        # rlt1 = rlt1[:s1_start + 1] + '_' * len(s2) + rlt1[s1_start:]
+        # print('rlt1', rlt1)
+        gap_s1.append((s1_start, len(s2)))
         return
     if s1 == s2:
         return
@@ -133,6 +142,7 @@ def compute_cost(s1, s2):
 if __name__=='__main__':
     s1, s2 = generate()
     rlt1, rlt2 = s1, s2
+    gap_s1, gap_s2 = [], []
 
     final_rlt = call_algorithm(s1, s2)
     print('final_rlt of s1 and s2: ')
