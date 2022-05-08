@@ -6,8 +6,8 @@ import sys
 import time
 import psutil
 
-input_file = sys.argv[1]
-output_file = sys.argv[2]
+# input_file = sys.argv[1]
+# output_file = sys.argv[2]
 gap_penalty = 30
 mismatch_penalty_val = {('A', 'A'):0, ('A', 'C'):110, ('A', 'G'):48, ('A', 'T'):94,
                         ('C', 'A'):110, ('C', 'C'):0, ('C','G'):118, ('C', 'T'):48,
@@ -128,5 +128,6 @@ def compute_cost(s1, s2):
 if __name__=='__main__':
     s1, s2 = generate()
     cost, s1_rlt, s2_rlt, time_used, memory_used = call_algorithm(s1, s2)
+    # print(call_algorithm('', 'A')) # test
     # print(compute_cost(s1_rlt, s2_rlt))
     output_write(cost, s1_rlt, s2_rlt, time_used, memory_used)
