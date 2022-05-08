@@ -71,25 +71,25 @@ def call_algorithm(s1, s2):
 
 def divide_conquer(s1, s1_start, s2, s2_start):
     # 需要处理终止条件，若len（s1）为0则将对应的s2替换为'_'，s2亦然
-    if len(s1) == 0:
-        print(s1, s1_start, s2, s2_start)
-        global rlt2
-        rlt2 = rlt2[:s2_start] + '_' * len(s2) + rlt2[s2_start + len(s2):]
-        print('rlt2', rlt2)
-        return
     if len(s2) == 0:
         print(s1, s1_start, s2, s2_start)
+        global rlt2
+        rlt2 = rlt2[:s2_start] + '_' * len(s1) + rlt2[s2_start:]
+        print('rlt2', rlt2)
+        return
+    if len(s1) == 0:
+        print(s1, s1_start, s2, s2_start)
         global rlt1
-        rlt1 = rlt1[:s1_start] + '_' * len(s1) + rlt1[s1_start + len(s1):]
+        rlt1 = rlt1[:s1_start] + '_' * len(s2) + rlt1[s1_start:]
         print('rlt1', rlt1)
         return
     if s1 == s2:
         return
     s1_1, s1_2 = split_s(s1)
     cost1 = dp(s1_1, s2)
-    # cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
-    # cost = [cost1[i]+cost2[i] for i in range(len(cost1))] # 也可能是只用cost1？不确定是不是要加起来！
-    cost = cost1
+    cost2 = dp(s1_2[::-1], s2[::-1])[::-1]
+    cost = [cost1[i]+cost2[i] for i in range(len(cost1))] # 也可能是只用cost1？不确定是不是要加起来！
+    # cost = cost1
     best_pos = cost.index(min(cost)) + 1
 
     s2_1, s2_2 = split_s(s2, best_pos)
@@ -127,7 +127,9 @@ if __name__=='__main__':
     rlt1, rlt2 = s1, s2
 
     final_rlt = call_algorithm(s1, s2)
-    print(final_rlt)
+    print('final_rlt')
+    print(final_rlt[1])
+    print(final_rlt[2])
 
     # debug:
     # s1_1, s1_2 = split_s(s1)
