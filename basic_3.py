@@ -19,12 +19,13 @@ def process_memory():
   memory_info = process.memory_info()
   return memory_info.rss
 
-def time_wrapper():
+def time_wrapper(s1, s2):
     start_time = time.time()
-    call_algorithm()
+    cost, rlt1, rlt2 = call_algorithm(s1, s2)
     end_time = time.time()
     time_taken = (end_time - start_time)*1000
-    return time_taken
+    memory_used = process_memory()
+    return cost, rlt1, rlt2, time_taken, memory_used
 
 def insert(pos, str):
     curr_s = str
@@ -58,16 +59,6 @@ def generate():
             # print(l, len(s1), len(s2), 'show current s: ', s1, s2)
     return s1, s2
 
-def performance_check(func):
-  def wrapper(*args, **kwargs):
-    time_start = time.time()
-    cost, s1_rlt, s2_rlt = func(*args)
-    memory_used = process_memory()
-    time_end = time.time()
-    return cost, s1_rlt, s2_rlt, (time_end - time_start) * 1000, memory_used
-  return wrapper
-
-@performance_check
 def call_algorithm(s1, s2):
     m, n = len(s1), len(s2)
     matrix = [[0] * (n + 1) for _ in range(m + 1)]
@@ -127,7 +118,6 @@ def compute_cost(s1, s2):
 
 if __name__=='__main__':
     s1, s2 = generate()
-    cost, s1_rlt, s2_rlt, time_used, memory_used = call_algorithm(s1, s2)
-    # print(call_algorithm('', 'A')) # test
-    # print(compute_cost(s1_rlt, s2_rlt))
-    output_write(cost, s1_rlt, s2_rlt, time_used, memory_used)
+
+    cost, rlt1, rlt2, time_taken, memory_used = time_wrapper(s1, s2)
+    output_write(cost, rlt1, rlt2, time_taken, memory_used)
